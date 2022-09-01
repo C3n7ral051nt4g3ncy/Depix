@@ -12,7 +12,7 @@ def check_file(s: str) -> str:
     if os.path.isfile(s):
         return s
     else:
-        raise argparse.ArgumentTypeError("%s is not a file." % repr(s))
+        raise argparse.ArgumentTypeError(f"{repr(s)} is not a file.")
 
 
 def parse_args() -> argparse.Namespace:
@@ -60,7 +60,7 @@ def main() -> None:
     outputImage = image.getCopyOfLoadedPILImage()
 
     blockSize = 5
-    blockPixelCount = blockSize * blockSize
+    blockPixelCount = blockSize**2
 
     for x in range(0, image.width, blockSize):
         for y in range(0, image.height, blockSize):

@@ -18,7 +18,7 @@ class LoadedImage:
 
     def __loadImageData(self) -> list[list[tuple[int, int, int]]]:
         """Load data from image with getdata() because of the speed increase over consecutive calls to getpixel"""
-        _imageData = [[y for y in range(self.height)] for x in range(self.width)]
+        _imageData = [list(range(self.height)) for _ in range(self.width)]
 
         rawData = self.loadedImage.getdata()
         rawDataCount = 0
@@ -27,6 +27,6 @@ class LoadedImage:
         for y in range(self.height):
             for x in range(self.width):
 
-                _imageData[x][y] = rawData[rawDataCount][0:3]
+                _imageData[x][y] = rawData[rawDataCount][:3]
                 rawDataCount += 1
         return cast(list[list[tuple[int, int, int]]], _imageData)

@@ -33,7 +33,7 @@ def check_file(s: str) -> str:
     if os.path.isfile(s):
         return s
     else:
-        raise argparse.ArgumentTypeError("%s is not a file." % repr(s))
+        raise argparse.ArgumentTypeError(f"{repr(s)} is not a file.")
 
 
 def check_color(s: str | None) -> tuple[int, int, int] | None:
@@ -42,13 +42,12 @@ def check_color(s: str | None) -> tuple[int, int, int] | None:
     ss = s.split(",")
     if len(ss) != 3:
         raise argparse.ArgumentTypeError("Given colors must be formatted as 'r,g,b'.")
-    else:
-        try:
-            return cast(tuple[int, int, int], tuple([int(i) for i in ss]))
-        except ValueError:
-            raise argparse.ArgumentTypeError(
-                "Maybe %s is not '<int>,<int>,<int>'." % repr(s)
-            )
+    try:
+        return cast(tuple[int, int, int], tuple(int(i) for i in ss))
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            "Maybe %s is not '<int>,<int>,<int>'." % repr(s)
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -129,11 +128,11 @@ def main() -> None:
     editorBackgroundColor: tuple[int, int, int] | None = args.backgroundcolor
     averageType = args.averagetype
 
-    logging.info("Loading pixelated image from %s" % pixelatedImagePath)
+    logging.info(f"Loading pixelated image from {pixelatedImagePath}")
     pixelatedImage = LoadedImage(pixelatedImagePath)
     unpixelatedOutputImage = pixelatedImage.getCopyOfLoadedPILImage()
 
-    logging.info("Loading search image from %s" % searchImagePath)
+    logging.info(f"Loading search image from {searchImagePath}")
     searchImage = LoadedImage(searchImagePath)
 
     logging.info("Finding color rectangles from pixelated space")
@@ -145,15 +144,15 @@ def main() -> None:
     pixelatedSubRectanges = findSameColorSubRectangles(
         pixelatedImage, pixelatedRectange
     )
-    logging.info("Found %s same color rectangles" % len(pixelatedSubRectanges))
+    logging.info(f"Found {len(pixelatedSubRectanges)} same color rectangles")
 
     pixelatedSubRectanges = removeMootColorRectangles(
         pixelatedSubRectanges, editorBackgroundColor
     )
-    logging.info("%s rectangles left after moot filter" % len(pixelatedSubRectanges))
+    logging.info(f"{len(pixelatedSubRectanges)} rectangles left after moot filter")
 
     rectangeSizeOccurences = findRectangleSizeOccurences(pixelatedSubRectanges)
-    logging.info("Found %s different rectangle sizes" % len(rectangeSizeOccurences))
+    logging.info(f"Found {len(rectangeSizeOccurences)} different rectangle sizes")
     if len(rectangeSizeOccurences) > max(
         10, pixelatedRectange.width * pixelatedRectange.height * 0.01
     ):
@@ -177,9 +176,9 @@ def main() -> None:
     )
 
     logging.info(
-        "[%s straight matches | %s multiple matches]"
-        % (len(singleResults), len(pixelatedSubRectanges))
+        f"[{len(singleResults)} straight matches | {len(pixelatedSubRectanges)} multiple matches]"
     )
+
 
     logging.info("Trying geometrical matches on single-match squares")
     singleResults, pixelatedSubRectanges = findGeometricMatchesForSingleResults(
@@ -187,9 +186,9 @@ def main() -> None:
     )
 
     logging.info(
-        "[%s straight matches | %s multiple matches]"
-        % (len(singleResults), len(pixelatedSubRectanges))
+        f"[{len(singleResults)} straight matches | {len(pixelatedSubRectanges)} multiple matches]"
     )
+
 
     logging.info("Trying another pass on geometrical matches")
     singleResults, pixelatedSubRectanges = findGeometricMatchesForSingleResults(
@@ -197,9 +196,9 @@ def main() -> None:
     )
 
     logging.info(
-        "[%s straight matches | %s multiple matches]"
-        % (len(singleResults), len(pixelatedSubRectanges))
+        f"[{len(singleResults)} straight matches | {len(pixelatedSubRectanges)} multiple matches]"
     )
+
 
     logging.info("Writing single match results to output")
     writeFirstMatchToImage(
@@ -213,7 +212,7 @@ def main() -> None:
 
     # writeRandomMatchesToImage(pixelatedSubRectanges, rectangleMatches, searchImage, unpixelatedOutputImage)
 
-    logging.info("Saving output image to: %s" % args.outputimage)
+    logging.info(f"Saving output image to: {args.outputimage}")
     unpixelatedOutputImage.save(args.outputimage)
 
 
